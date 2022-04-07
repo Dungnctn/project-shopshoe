@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import Header from "./../components/Header";
 import Rating from "../components/homeComponents/Rating";
 import { Link, useParams } from "react-router-dom";
@@ -7,9 +7,9 @@ import Loading from '../components/LoadingError/Loading';
 import { useDispatch, useSelector } from "react-redux"
 import { listProductDetails } from "../Redux/Actions/ProductActions";
 
-const SingleProduct = ({ match }) => {
-  const {id} = useParams()
-  console.log(id);
+const SingleProduct = ({history, match }) => {
+  const [qty, setQty] = useState(1);
+  const {id} = useParams();
   const dispatch = useDispatch()
 
   const productDetails = useSelector(state => state.productDetails);
@@ -18,6 +18,12 @@ const SingleProduct = ({ match }) => {
   useEffect(() => {
     dispatch(listProductDetails(id))
   }, [dispatch, id])
+
+  const HanldeAddToCart = (e) => {
+    e.preventDefault()
+    history.push(`/cart/${id}?qty=${qty}`)
+  }
+
   return (
     <>
       <Header />
@@ -44,19 +50,19 @@ const SingleProduct = ({ match }) => {
 
                     <div className="product-count col-lg-7 ">
                       <div className="flex-box d-flex justify-content-between align-items-center">
-                        <h6>Price</h6>
+                        <h6>Giá</h6>
                         <span>${product.price}</span>
                       </div>
                       <div className="flex-box d-flex justify-content-between align-items-center">
-                        <h6>Status</h6>
+                        <h6>Tình trạng</h6>
                         {product.countInStock > 0 ? (
-                          <span>In Stock</span>
+                          <span>Còn hàng</span>
                         ) : (
-                          <span>unavailable</span>
+                          <span>Hết hàng</span>
                         )}
                       </div>
                       <div className="flex-box d-flex justify-content-between align-items-center">
-                        <h6>Reviews</h6>
+                        <h6>Đánh giá</h6>
                         <Rating
                           value={product.rating}
                           text={`${product.numReviews} reviews`}
@@ -74,7 +80,7 @@ const SingleProduct = ({ match }) => {
                               ))}
                             </select>
                           </div>
-                          <button className="round-black-btn">Add To Cart</button>
+                          <button onClick={HanldeAddToCart} className="round-black-btn">Add To Cart</button>
                         </>
                       ) : null}
                     </div>
@@ -85,8 +91,8 @@ const SingleProduct = ({ match }) => {
               {/* RATING */}
               <div className="row my-5">
                 <div className="col-md-6">
-                  <h6 className="mb-3">REVIEWS</h6>
-                  <Message variant={"alert-info mt-3"}>No Reviews</Message>
+                  <h6 className="mb-3">Nhận xét</h6>
+                  <Message variant={"alert-info mt-3"}>Không có nhận xét</Message>
                   <div className="mb-5 mb-md-3 bg-light p-3 shadow-sm rounded">
                     <strong>Admin Doe</strong>
                     <Rating />
@@ -100,7 +106,7 @@ const SingleProduct = ({ match }) => {
                   </div>
                 </div>
                 <div className="col-md-6">
-                  <h6>WRITE A CUSTOMER REVIEW</h6>
+                  <h6>Viết bài đánh giá của khách hàng</h6>
                   <div className="my-4"></div>
 
                   <form>
